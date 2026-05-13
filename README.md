@@ -97,4 +97,13 @@ GET /products/P001/availability?storeId=PARIS001&channel=web
   "fulfillmentMode": "CLICK_AND_COLLECT",
   "lastUpdatedAt": "2026-05-12T10:30:00Z"
 }
+## Documentation
 
+- [Business Need](01-business-requirement/business-need.md)
+- [API-led Architecture](02-architecture-design/api-led-architecture.md)
+- [RAML Interface Contract](03-interface-contract/stock-availability-api.raml)
+- [SLA and Governance](04-sla-and-governance/sla-definition.md)
+- [DataWeave Transformation](05-mulesoft-implementation/dataweave/availability-response-transform.dwl)
+- [Runtime Manager and CloudHub Deployment](06-deployment/runtime-manager-cloudhub.md)
+- [Postman Test Scenarios](07-postman-tests/test-scenarios.md)
+- [Timeout Investigation](08-troubleshooting/timeout-investigation.md)
