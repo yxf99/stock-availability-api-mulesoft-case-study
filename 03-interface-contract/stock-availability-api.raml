@@ -1,0 +1,136 @@
+#%RAML 1.0
+title: Stock Availability API
+version: v1
+baseUri: https://api.company.com/{version}
+mediaType: application/json
+
+types:
+  AvailabilityResponse:
+    type: object
+    properties:
+      productId: string
+      storeId?: string
+      channel:
+        type: string
+        enum: [web, mobile, store]
+      available: boolean
+      availableQuantity:
+        type: integer
+        minimum: 0
+      canAddToCart: boolean
+      canCheckout: boolean
+      availabilityStatus:
+        type: string
+        enum: [AVAILABLE, OUT_OF_STOCK, NOT_AVAILABLE_IN_STORE, NOT_AVAILABLE_FOR_CHANNEL]
+      reasonCode?:
+        type: string
+        enum: [OUT_OF_STOCK, STORE_NOT_ELIGIBLE, CHANNEL_NOT_ELIGIBLE, SOURCE_UNAVAILABLE]
+      fulfillmentMode?:
+        type: string
+        enum: [HOME_DELIVERY, CLICK_AND_COLLECT, SHIP_FROM_STORE]
+      lastUpdatedAt: datetime
+
+  ErrorResponse:
+    type: object
+    properties:
+      errorCode: string
+      message: string
+      sourceSystem?: string
+      correlationId?: string
+      timestamp?: datetime
+
+/products:
+  /{productId}:
+    uriParameters:
+      productId:
+        type: string
+        required: true
+        example: "P001"
+
+    /availability:
+      get:
+        description: Get stock availability for a product, store and channel.
+
+        headers:
+          Authorization:
+            type: string
+            required: true
+            example: "Bearer eyJhbGciOi..."
+          X-Correlation-ID?:
+            type: string
+            required: false
+            example: "cor-123456"
+
+        queryParameters:
+          storeId?:
+            type: string
+            example: "PARIS001"
+          channel:
+            type: string
+            required: true
+            enum: [web, mobile, store]
+            example: "web"
+
+        responses:
+          200:
+            body:
+              application/json:
+                type: AvailabilityResponse
+                example:
+                  productId: "P001"
+                  storeId: "PARIS001"
+                  channel: "web"
+                  available: true
+                  availableQuantity: 7
+                  canAddToCart: true
+                  canCheckout: true
+                  availabilityStatus: "AVAILABLE"
+                  fulfillmentMode: "CLICK_AND_COLLECT"
+                  lastUpdatedAt: "2026-05-12T10:30:00Z"
+
+          400:
+            body:
+              application/json:
+                type: ErrorResponse
+                example:
+                  errorCode: "INVALID_REQUEST"
+                  message: "Missing or invalid parameter"
+                  correlationId: "cor-123456"
+
+          401:
+            body:
+              application/json:
+                type: ErrorResponse
+                example:
+                  errorCode: "UNAUTHORIZED"
+                  message: "Missing or invalid access token"
+                  correlationId: "cor-123456"
+
+          404:
+            body:
+              application/json:
+                type: ErrorResponse
+                example:
+                  errorCode: "PRODUCT_NOT_FOUND"
+                  message: "Product does not exist"
+                  correlationId: "cor-123456"
+
+          503:
+            body:
+              application/json:
+                type: ErrorResponse
+                example:
+                  errorCode: "SOURCE_UNAVAILABLE"
+                  message: "Source system is temporarily unavailable"
+                  sourceSystem: "OMS"
+                  correlationId: "cor-123456"
+
+          504:
+            body:
+              application/json:
+                type: ErrorResponse
+                example:
+                  errorCode: "SOURCE_TIMEOUT"
+                  message: "SAP did not respond within the configured timeout"
+                  sourceSystem: "SAP"
+                  correlationId: "cor-123456"
