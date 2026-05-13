@@ -1,6 +1,6 @@
 # Business Need
 
-## Context
+## Context 
 
 The e-commerce front needs to display product availability before customers add a product to the cart.
 
