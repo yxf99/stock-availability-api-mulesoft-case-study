@@ -52,21 +52,34 @@ As an Integration PM / API Delivery profile evolving toward Integration Architec
 
 ```mermaid
 flowchart TD
-    A[E-commerce Front / Mobile App] -->|GET /products/{productId}/availability| B[Experience API<br/>Product Availability API]
+    A["E-commerce Front<br/>Mobile App"]
+    B["Experience API<br/>Product Availability API"]
+    C["Process API<br/>Stock Availability Orchestration"]
+    D["SAP System API"]
+    E["OMS System API"]
+    F["Store Stock System API"]
 
-    B --> C[Process API<br/>Stock Availability Orchestration]
+    G["SAP<br/>Warehouse Stock<br/>Back-office Stock"]
+    H["OMS<br/>Orders in Progress<br/>Reservations"]
+    I["Store Stock System<br/>Local Store Availability"]
 
-    C --> D[SAP System API]
-    C --> E[OMS System API]
-    C --> F[Store Stock System API]
+    J["API Manager<br/>OAuth / JWT<br/>Rate Limiting / SLA"]
+    K["Observability<br/>Correlation ID<br/>Logs / Timeout Tracking"]
 
-    D --> G[SAP<br/>Warehouse / Back-office stock]
-    E --> H[OMS<br/>Orders in progress / Reservations]
-    F --> I[Store Stock System<br/>Local store availability]
+    A -->|GET availability| B
+    B -->|normalized request| C
 
-    B --> J[API Manager<br/>OAuth / Rate limiting / SLA]
-    C --> K[Monitoring<br/>Correlation ID / Logs / Timeout tracking]
+    C -->|stock request| D
+    C -->|reservation request| E
+    C -->|store stock request| F
 
+    D --> G
+    E --> H
+    F --> I
+
+    B -.-> J
+    C -.-> K
+```
 **API Example**
 GET /products/P001/availability?storeId=PARIS001&channel=web
 
